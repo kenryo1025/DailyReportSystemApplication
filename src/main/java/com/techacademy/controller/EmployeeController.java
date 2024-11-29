@@ -110,31 +110,35 @@ public class EmployeeController {
 
         // パスワード空白チェック
         if ("".equals(employee.getPassword())) {
-            model.addAttribute("passwordError", "パスワードを入力してください。");
-            model.addAttribute("employee", employee);
-            return update(code, model); // 更新画面に戻る
+            // パスワードが空白だった場合
+            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
+                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
+
+            return update(code,model);
+
         }
 
         // 入力チェック
         if (res.hasErrors()) {
-            model.addAttribute("employee", employee);
-            return update(code, model);// 更新画面に戻る
+            return update(code,model);
         }
 
+        // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
+        // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
         try {
             ErrorKinds result = employeeService.update(employee);
 
             if (ErrorMessage.contains(result)) {
-                model.addAttribute("error", ErrorMessage.getErrorValue(result));
-                model.addAttribute("employee", employee);
-                return update(code, model); // 更新画面に戻る
+                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+                return update(code,model);
             }
 
         } catch (DataIntegrityViolationException e) {
-            model.addAttribute("error", "データの整合性に問題があります。");
-            model.addAttribute("employee", employee);
-            return update(code, model); // 更新画面に戻る
+            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
+                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
+            return update(code,model);
         }
+
 
         return "redirect:/employees"; // 正常終了時のリダイレクト
     }
