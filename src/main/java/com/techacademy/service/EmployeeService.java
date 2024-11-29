@@ -61,17 +61,17 @@ public class EmployeeService {
 
         Employee existingEmployee = existingEmployeeOpt.get();
 
-        // パスワードチェック
+     // パスワードチェック
         ErrorKinds result = employeePasswordCheck(employee);
         if (ErrorKinds.CHECK_OK != result) {
             return result;
         }
 
         // 既存の情報を更新
-        existingEmployee.setName(employee.getName());
-        existingEmployee.setRole(employee.getRole());
-        existingEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
-        existingEmployee.setUpdatedAt(LocalDateTime.now());
+        existingEmployee.setPassword(employee.getPassword());
+        LocalDateTime now = LocalDateTime.now();
+        existingEmployee.setUpdatedAt(now);
+
 
         // 更新を保存
         employeeRepository.save(existingEmployee);
