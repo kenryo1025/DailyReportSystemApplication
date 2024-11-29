@@ -111,13 +111,9 @@ public class EmployeeController {
         // パスワード空白チェック
         if ("".equals(employee.getPassword())) {
             // パスワードが空白だった場合
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
-
-            return update(code,model);
-
-        }
-
+             employeeService.update(employee);
+             return "redirect:/employees";
+        }else {
         // 入力チェック
         if (res.hasErrors()) {
             return update(code,model);
@@ -138,10 +134,11 @@ public class EmployeeController {
                     ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
             return update(code,model);
         }
+        }
 
 
         return "redirect:/employees"; // 正常終了時のリダイレクト
-    }
+              }
 
 
     // 従業員削除処理

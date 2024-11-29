@@ -32,6 +32,7 @@ public class EmployeeService {
     public ErrorKinds save(Employee employee) {
 
         // パスワードチェック
+
         ErrorKinds result = employeePasswordCheck(employee);
         if (ErrorKinds.CHECK_OK != result) {
             return result;
@@ -61,17 +62,20 @@ public class EmployeeService {
 
         Employee existingEmployee = existingEmployeeOpt.get();
 
-     // パスワードチェック
+     //パスワードが空白でない場合のみパスワードを更新
+        if (!"".equals(employee.getPassword())) {
         ErrorKinds result = employeePasswordCheck(employee);
         if (ErrorKinds.CHECK_OK != result) {
             return result;
         }
+        existingEmployee.setPassword(employee.getPassword());
+        }
 
         // 既存の情報を更新
-        existingEmployee.setPassword(employee.getPassword());
         LocalDateTime now = LocalDateTime.now();
         existingEmployee.setUpdatedAt(now);
-
+        existingEmployee.setName(employee.getName());
+        existingEmployee.setRole(employee.getRole());
 
         // 更新を保存
         employeeRepository.save(existingEmployee);
