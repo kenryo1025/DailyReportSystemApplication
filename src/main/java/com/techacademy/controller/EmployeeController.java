@@ -52,7 +52,6 @@ public class EmployeeController {
     // 従業員新規登録画面
     @GetMapping(value = "/add")
     public String create(@ModelAttribute Employee employee) {
-
         return "employees/new";
     }
 
@@ -97,6 +96,49 @@ public class EmployeeController {
 
         return "redirect:/employees";
     }
+
+    // 従業員更新画面
+    @GetMapping(value = "/{code}/update")
+    public String update(@PathVariable String code, Model model) {
+        model.addAttribute("employee", employeeService.findByCode(code));
+        return "employees/update";
+    }
+
+    // 従業員更新処理
+    @PostMapping(value = "/{code}/update")
+    public String newupdate(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
+
+        // パスワード空白チェック
+        if ("".equals(employee.getPassword())) {
+            model.addAttribute("passwordError", "パスワードを入力してください。");
+            model.addAttribute("employee", employee);
+            return update(code, model); // 更新画面に戻る
+        }
+
+        // 入力チェック
+        if (res.hasErrors()) {
+            model.addAttribute("employee", employee);
+            return update(code, model);// 更新画面に戻る
+        }
+
+        try {
+            ErrorKinds result = employeeService.update(employee);
+
+            if (ErrorMessage.contains(result)) {
+                model.addAttribute("error", ErrorMessage.getErrorValue(result));
+                model.addAttribute("employee", employee);
+                return update(code, model); // 更新画面に戻る
+            }
+
+        } catch (DataIntegrityViolationException e) {
+            model.addAttribute("error", "データの整合性に問題があります。");
+            model.addAttribute("employee", employee);
+            return update(code, model); // 更新画面に戻る
+        }
+
+        return "redirect:/employees"; // 正常終了時のリダイレクト
+    }
+
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
