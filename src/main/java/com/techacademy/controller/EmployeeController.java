@@ -111,6 +111,10 @@ public class EmployeeController {
         // パスワード空白チェック
         if ("".equals(employee.getPassword())) {
             // パスワードが空白だった場合
+            // 入力チェック
+            if (res.hasErrors()) {
+                return update(code,model);
+            }
              employeeService.update(employee);
              return "redirect:/employees";
         }else {

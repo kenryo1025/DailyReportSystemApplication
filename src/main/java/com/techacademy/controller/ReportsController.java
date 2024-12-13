@@ -108,7 +108,8 @@ public class ReportsController {
 
         // 入力チェック
         if (res.hasErrors()) {
-            return create(report,userDetail,model);
+            model.addAttribute("report", report);
+            return update(id,model);
         }
 
         // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応

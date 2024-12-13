@@ -30,7 +30,7 @@ public class ReportService {
         // 日付の重複度チェック
         ErrorKinds result = checkDate(userDetail,report);
         if (ErrorKinds.CHECK_OK != result) {
-            return result;
+
         }
 
         // 現在ログインしている従業員をレポートに設定
@@ -63,6 +63,7 @@ public class ReportService {
 
         // 既存の情報を更新
         LocalDateTime now = LocalDateTime.now();
+        existingReport.setReport_date(report.getReport_date());
         existingReport.setUpdatedAt(now);
         existingReport.setTitle(report.getTitle());
         existingReport.setContent(report.getContent());
@@ -108,8 +109,8 @@ public class ReportService {
             for (Report dup_report : reportlist) {
                 // 更新の場合、同じIDの日報はスキップ
                 if (dup_report.getId().equals(report.getId())) {
-                    continue;
-                }
+                    return ErrorKinds.CHECK_OK;
+                    }
                 if (dup_report.getReport_date().equals(report.getReport_date())) {
                    return ErrorKinds.DATECHECK_ERROR;
                 }
