@@ -19,7 +19,7 @@
                 <div class="col-xl-12">
                     <div class="card">
                         <div class="card-body mb-5">
-                            <form th:action="@{/reports/{code}/update(code=${report.id})}" th:object="${report}"
+                            <form th:action="@{/reports/{id}/update(id=${report.id})}" th:object="${report}"
                                 th:method="post">
                                 <div class="wizard wizard-success mb-4">
                                     <div class="mb-3">
@@ -27,39 +27,44 @@
                                         <p class="mb-1"></p>
                                         <div class="col-md-7">
                                             <input class="form-control" type="date" th:field="*{report_date}"
-                                                th:errorclass="err" id="date"></input> 
-                                                <span th:if="${reportDateError}" th:text="${reportDateError}" class="text-danger"></span>
+                                                th:errorclass="err" id="date"></input>
+                                            <span th:errors="*{report_date}" class="text-danger"></span>
+                                            <span th:if="${reportDateError}" th:text="${reportDateError}"
+                                                class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="code">氏名</label>
                                         <p class="mb-1"></p>
                                         <td class="align-middle" th:text="*{employee.name}"></td>
-
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label" for="title">タイトル</label>
-                                        <p class="mb-1"></p>
-                                        <div class="col-md-7">
-                                            <input class="form-control" type="text" th:field="*{title}"  th:errorclass="err" id="title"></input>
+                                        <input type="hidden" th:field="*{employee.name}" id="employee.name"></imput>
+                                      </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="title">タイトル</label>
+                                            <p class="mb-1"></p>
+                                            <div class="col-md-7">
+                                                <input class="form-control" type="text" th:field="*{title}"
+                                                    th:errorclass="err" id="title"></input>
+                                                <span th:errors="*{title}" class="text-danger"></span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label" for="content">内容</label>
-                                        <p class="mb-1"></p>
-                                        <div class="col-md-9">
-                                            <textarea class="form-control" type="text" th:field="*{content}" th:errorclass="err"
-                                                id="content" rows="5"></textarea>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="content">内容</label>
+                                            <p class="mb-1"></p>
+                                            <div class="col-md-9">
+                                                <textarea class="form-control" type="text" th:field="*{content}"
+                                                    th:errorclass="err" id="content" rows="5"></textarea>
+                                                <span th:errors="*{content}" class="text-danger"></span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="mt-5 row g-1">
-                                        <div class="col-auto">
-                                            <input type="submit" value="更新" class="btn btn-primary">
+                                        <div class="mt-5 row g-1">
+                                            <div class="col-auto">
+                                                <input type="submit" value="更新" class="btn btn-primary">
+                                            </div>
+                                            <div class="col-auto">
+                                                <a th:href="@{/reports}" class="btn btn-primary">戻る</a>
+                                            </div>
                                         </div>
-                                        <div class="col-auto">
-                                            <a th:href="@{/reports}" class="btn btn-primary">戻る</a>
-                                        </div>
-                                    </div>
                             </form>
                             <span th:if="${deleteError} neq null" th:text="${deleteError}" class="text-danger"></span>
                         </div>

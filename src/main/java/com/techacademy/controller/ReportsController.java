@@ -29,7 +29,7 @@ public class ReportsController {
     private final ReportService reportService;
 
     @Autowired
-    public ReportsController(ReportService reportService,ReportRepository reportRepository) {
+    public ReportsController(ReportService reportService, ReportRepository reportRepository) {
         this.reportService = reportService;
         this.reportRepository = reportRepository;
     }
@@ -38,13 +38,13 @@ public class ReportsController {
     @GetMapping
     public String list(@AuthenticationPrincipal UserDetail userDetail, Model model) {
 
-        if(userDetail.getEmployee().getRole().getValue().equals("一般")) {
-        List<Report> userRole = reportRepository.findByEmployee(userDetail.getEmployee());
-        model.addAttribute("listSize", userRole.size());
-        model.addAttribute("reportList", userRole);
-        }else {
-        model.addAttribute("listSize", reportService.findAll().size());
-        model.addAttribute("reportList", reportService.findAll());
+        if (userDetail.getEmployee().getRole().getValue().equals("一般")) {
+            List<Report> userRole = reportRepository.findByEmployee(userDetail.getEmployee());
+            model.addAttribute("listSize", userRole.size());
+            model.addAttribute("reportList", userRole);
+        } else {
+            model.addAttribute("listSize", reportService.findAll().size());
+            model.addAttribute("reportList", reportService.findAll());
         }
         return "reports/list";
     }
@@ -67,71 +67,65 @@ public class ReportsController {
 
     // 日報新規登録処理
     @PostMapping(value = "/add")
-    public String add(@Validated Report report,BindingResult res,@AuthenticationPrincipal UserDetail userDetail, Model model) {
+    public String add(@Validated Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail,
+            Model model) {
 
         // 入力チェック
         if (res.hasErrors()) {
-            return create(report,userDetail,model);
-        }
-
-
-     // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
-        // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
-        try {
-            ErrorKinds result = reportService.save(report,userDetail,model);
-
-            if (ErrorMessage.contains(result)) {
-                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                return create(report,userDetail,model);
-            }
-
-        } catch (DataIntegrityViolationException e) {
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
-            return create(report,userDetail,model);
-        }
-
-
-        return "redirect:/reports";
-    }
-
-    // 従業員更新画面
-    @GetMapping(value = "/{id}/update")
-    public String update(@PathVariable Long id, Model model) {
-        model.addAttribute("report", reportService.findById(id));
-        return "reports/update";
-    }
-
-    // 従業員更新処理
-    @PostMapping(value = "/{id}/update")
-    public String newupdate(@PathVariable Long id, @Validated Report report, BindingResult res,@AuthenticationPrincipal UserDetail userDetail,Model model) {
-
-        // 入力チェック
-        if (res.hasErrors()) {
-            model.addAttribute("report", report);
-            return update(id,model);
+            return create(report, userDetail, model);
         }
 
         // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
         // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
         try {
-            ErrorKinds result = reportService.update(report,userDetail, model);
+            ErrorKinds result = reportService.save(report, userDetail, model);
 
             if (ErrorMessage.contains(result)) {
                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                return update(id,model);
+                return create(report, userDetail, model);
             }
 
         } catch (DataIntegrityViolationException e) {
             model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
                     ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
-            return update(id,model);
+            return create(report, userDetail, model);
         }
 
+        return "redirect:/reports";
+    }
+
+    // 日報更新画面
+    @GetMapping(value = "/{id}/update")
+    public String update(@PathVariable Long id, Report report, Model model) {
+        if (id != null) {
+            model.addAttribute("report", reportService.findById(id));
+        } else {
+            model.addAttribute("report", report);
+        }
+        return "reports/update";
+    }
+
+    // 日報更新処理
+    @PostMapping(value = "/{id}/update")
+    public String newupdate(@PathVariable Long id, @Validated Report report, BindingResult res,
+            @AuthenticationPrincipal UserDetail userDetail, Model model) {
+
+        // 入力チェック
+        if (res.hasErrors()) {
+            return update(null, report, model);
+        }
+
+        // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
+        // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
+        ErrorKinds result = reportService.update(report, userDetail, model);
+
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            return update(null, report, model);
+        }
 
         return "redirect:/reports"; // 正常終了時のリダイレクト
-              }
-
+    }
 
     // 日報削除処理
     @PostMapping(value = "/{id}/delete")

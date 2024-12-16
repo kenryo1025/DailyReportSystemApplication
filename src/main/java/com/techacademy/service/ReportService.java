@@ -30,7 +30,7 @@ public class ReportService {
         // 日付の重複度チェック
         ErrorKinds result = checkDate(userDetail,report);
         if (ErrorKinds.CHECK_OK != result) {
-
+            return result;
         }
 
         // 現在ログインしている従業員をレポートに設定
